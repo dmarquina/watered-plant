@@ -9,6 +9,4 @@ import java.util.Date;
 import java.util.List;
 
 public interface WateredPlantRepository extends JpaRepository<WateredPlant, Long> {
-    @Query("Select wp from WateredPlant wp where wp.lastDayWatering = :lastDayWatering")
-    List<WateredPlant> find(@Param("lastDayWatering") Date lastDayWatering);
 }

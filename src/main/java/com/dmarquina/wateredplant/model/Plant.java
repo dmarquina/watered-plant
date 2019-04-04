@@ -20,4 +20,9 @@ public class Plant {
 
   public Plant() {
   }
+
+  public Plant(String name, String image) {
+    this.name = name;
+    this.image = image;
+  }
 }

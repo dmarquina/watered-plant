@@ -9,7 +9,11 @@ public interface WateredPlantService {
 
   List<WateredPlant> findAll();
 
+  WateredPlant findById(Long id);
+
   WateredPlant create(WateredPlant wateredPlant);
+
+  WateredPlant update(WateredPlant wateredPlant);
 
   WateredPlant updateLastDayWatering(Long id, LocalDate lastDayWatering);
 }

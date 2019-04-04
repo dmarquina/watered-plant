@@ -5,8 +5,9 @@ import java.time.LocalDate;
 import lombok.Data;
 
 @Data
-public class WateredPlantRequest {
-  private PlantRequest plant;
+public class NewWateredPlantRequest {
+  private String name;
+  private String image;
   private Long minWateringDays;
   private Long maxWateringDays;
   private LocalDate lastDayWatering;
