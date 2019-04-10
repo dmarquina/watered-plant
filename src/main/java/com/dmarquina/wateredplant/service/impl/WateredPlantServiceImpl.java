@@ -1,20 +1,17 @@
 package com.dmarquina.wateredplant.service.impl;
 
-import com.dmarquina.wateredplant.model.Plant;
 import com.dmarquina.wateredplant.model.WateredPlant;
-import com.dmarquina.wateredplant.repository.PlantRepository;
 import com.dmarquina.wateredplant.repository.WateredPlantRepository;
-import com.dmarquina.wateredplant.service.PlantService;
+import com.dmarquina.wateredplant.service.AmazonService;
 import com.dmarquina.wateredplant.service.WateredPlantService;
 
 import java.time.LocalDate;
-import java.time.temporal.ChronoUnit;
-import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 @Transactional(readOnly = true)
 @Service("wateredPlantService")
@@ -24,14 +21,11 @@ public class WateredPlantServiceImpl implements WateredPlantService {
   private WateredPlantRepository wateredPlantRepository;
 
   @Autowired
-  private PlantRepository plantRepository;
-
-  @Autowired
-  private PlantService plantService;
+  AmazonService amazonService;
 
   @Override
   public List<WateredPlant> findAll() {
-    return wateredPlantRepository.findAll();
+    return wateredPlantRepository.findAllByOrderByIdDesc();
   }
 
   @Override
@@ -42,16 +36,12 @@ public class WateredPlantServiceImpl implements WateredPlantService {
   @Override
   @Transactional
   public WateredPlant create(WateredPlant wateredPlant) {
-    Plant plant = plantService.create(wateredPlant.getPlant());
-    wateredPlant.getPlant()
-        .setId(plant.getId());
     return wateredPlantRepository.save(wateredPlant);
   }
 
   @Override
   @Transactional
   public WateredPlant update(WateredPlant wateredPlant) {
-    plantRepository.save(wateredPlant.getPlant());
     return wateredPlantRepository.save(wateredPlant);
   }
 
@@ -61,5 +51,19 @@ public class WateredPlantServiceImpl implements WateredPlantService {
     WateredPlant wateredPlant = wateredPlantRepository.getOne(id);
     wateredPlant.setLastDayWatering(lastDayWatering);
     return wateredPlantRepository.save(wateredPlant);
+  }
+
+  @Override
+  @Transactional
+  public WateredPlant updateImagePlant(Long plantId, MultipartFile newImage) {
+    try {
+      //TODO: Validar si existe o no
+      WateredPlant wateredPlantFound = wateredPlantRepository.findById(plantId).get();
+      wateredPlantFound.setImage(amazonService.uploadFile(plantId, newImage));
+      return wateredPlantRepository.save(wateredPlantFound);
+    } catch (Exception e) {
+      e.printStackTrace();
+      return null;
+    }
   }
 }

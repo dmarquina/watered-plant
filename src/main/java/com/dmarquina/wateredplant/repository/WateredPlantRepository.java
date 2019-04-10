@@ -9,4 +9,5 @@ import java.util.Date;
 import java.util.List;
 
 public interface WateredPlantRepository extends JpaRepository<WateredPlant, Long> {
+  List<WateredPlant> findAllByOrderByIdDesc();
 }

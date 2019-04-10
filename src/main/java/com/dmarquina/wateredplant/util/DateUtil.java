@@ -1,7 +1,11 @@
 package com.dmarquina.wateredplant.util;
 
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
+
 public class DateUtil {
-  public static boolean isLeapYear(int year) {
-    return (year % 4 == 0 && year % 100 != 0) || (year % 400 == 0);
+
+  public static Long getDaysSinceLastWatering(LocalDate lastDayWatering) {
+    return lastDayWatering.until(LocalDate.now(), ChronoUnit.DAYS);
   }
 }

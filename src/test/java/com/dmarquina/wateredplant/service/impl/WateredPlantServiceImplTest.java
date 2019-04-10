@@ -1,9 +1,7 @@
 package com.dmarquina.wateredplant.service.impl;
 
-import com.dmarquina.wateredplant.model.Plant;
 import com.dmarquina.wateredplant.model.WateredPlant;
 import com.dmarquina.wateredplant.repository.WateredPlantRepository;
-import com.dmarquina.wateredplant.service.PlantService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,26 +26,12 @@ public class WateredPlantServiceImplTest {
   @Mock
   WateredPlantRepository wateredPlantRepository;
 
-  @Mock
-  private PlantService plantService;
-
   @Before
   public void setUp() {
     MockitoAnnotations.initMocks(this);
   }
 
-  @Test
-  public void create_watered_plant_ok() {
-    Plant dummyPlant = mock(Plant.class);
-    when(wateredPlantRepository.save(any())).thenReturn(new WateredPlant());
-    when(plantService.create(any())).thenReturn(dummyPlant);
-    when(dummyPlant.getId()).thenReturn(new Long(1));
 
-    WateredPlant wateredPlant = mock(WateredPlant.class);
-    when(wateredPlant.getPlant()).thenReturn(dummyPlant);
-    WateredPlant newWateredPlant = wateredPlantService.create(wateredPlant);
-    assertThat(new WateredPlant(), is(newWateredPlant));
-  }
 
   @Test
   public void list_watered_plants_ok() {

@@ -11,4 +11,5 @@ public class NewWateredPlantRequest {
   private Long minWateringDays;
   private Long maxWateringDays;
   private LocalDate lastDayWatering;
+
 }

@@ -1,21 +1,18 @@
 package com.dmarquina.wateredplant.controller;
 
-import com.dmarquina.wateredplant.dto.request.UpdateLastDayWateringRequest;
 import com.dmarquina.wateredplant.dto.request.NewWateredPlantRequest;
+import com.dmarquina.wateredplant.dto.request.UpdateLastDayWateringRequest;
 import com.dmarquina.wateredplant.dto.request.UpdateWateredPlantRequest;
-import com.dmarquina.wateredplant.dto.response.PlantResponse;
 import com.dmarquina.wateredplant.dto.response.WateredPlantResponse;
-import com.dmarquina.wateredplant.model.Plant;
 import com.dmarquina.wateredplant.model.WateredPlant;
 import com.dmarquina.wateredplant.service.WateredPlantService;
+import com.dmarquina.wateredplant.util.DateUtil;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 
-import java.time.LocalDate;
-import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -29,7 +26,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 @Api(tags = "Plantas Regadas")
 @RestController
@@ -56,13 +55,9 @@ public class WateredPlantController {
   private WateredPlantResponse convertWateredPlantToWateredPlantResponse(
       WateredPlant wateredPlant) {
     WateredPlantResponse wpr = new WateredPlantResponse();
-
     BeanUtils.copyProperties(wateredPlant, wpr);
-    wpr.setDaysSinceLastDayWatering(getDaysSinceLastWatering(wateredPlant));
-
-    PlantResponse pr = new PlantResponse();
-    BeanUtils.copyProperties(wateredPlant.getPlant(), pr);
-    wpr.setPlant(pr);
+    wpr.setDaysSinceLastDayWatering(
+        DateUtil.getDaysSinceLastWatering(wateredPlant.getLastDayWatering()));
     return wpr;
   }
 
@@ -74,16 +69,11 @@ public class WateredPlantController {
           @ApiResponse(code = 500, message = "Error en el servidor") })
   @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
   public WateredPlantResponse wateredPlantById(@PathVariable Long id) {
-
     WateredPlant wateredPlantFound = wateredPlantService.findById(id);
     WateredPlantResponse wateredPlantResponse = new WateredPlantResponse();
     BeanUtils.copyProperties(wateredPlantFound, wateredPlantResponse);
-    wateredPlantResponse.setDaysSinceLastDayWatering(getDaysSinceLastWatering(wateredPlantFound));
-
-    PlantResponse pr = new PlantResponse();
-    BeanUtils.copyProperties(wateredPlantFound.getPlant(), pr);
-    wateredPlantResponse.setPlant(pr);
-
+    wateredPlantResponse.setDaysSinceLastDayWatering(
+        DateUtil.getDaysSinceLastWatering(wateredPlantFound.getLastDayWatering()));
     return wateredPlantResponse;
   }
 
@@ -98,18 +88,13 @@ public class WateredPlantController {
 
     WateredPlant newWateredPlant = new WateredPlant();
     BeanUtils.copyProperties(wateredPlantRequest, newWateredPlant);
-    newWateredPlant.setPlant(
-        new Plant(wateredPlantRequest.getName(), wateredPlantRequest.getImage()));
 
     WateredPlant wateredPlantCreated = wateredPlantService.create(newWateredPlant);
-
     WateredPlantResponse wateredPlantResponse = new WateredPlantResponse();
     BeanUtils.copyProperties(wateredPlantCreated, wateredPlantResponse);
-    wateredPlantResponse.setDaysSinceLastDayWatering(getDaysSinceLastWatering(wateredPlantCreated));
+    wateredPlantResponse.setDaysSinceLastDayWatering(
+        DateUtil.getDaysSinceLastWatering(wateredPlantCreated.getLastDayWatering()));
 
-    PlantResponse prr = new PlantResponse();
-    BeanUtils.copyProperties(wateredPlantCreated.getPlant(), prr);
-    wateredPlantResponse.setPlant(prr);
     return wateredPlantResponse;
   }
 
@@ -126,21 +111,28 @@ public class WateredPlantController {
     WateredPlant updateWateredPlant = new WateredPlant();
     BeanUtils.copyProperties(updateWateredPlantRequest, updateWateredPlant);
 
-    Plant updatePlant = new Plant();
-    updatePlant.setId(updateWateredPlantRequest.getPlantId());
-    updatePlant.setName(updateWateredPlantRequest.getName());
-    updatePlant.setImage(updateWateredPlantRequest.getImage());
-    updateWateredPlant.setPlant(updatePlant);
-
     WateredPlant wateredPlantUpdated = wateredPlantService.update(updateWateredPlant);
+
     WateredPlantResponse wateredPlantResponse = new WateredPlantResponse();
     BeanUtils.copyProperties(wateredPlantUpdated, wateredPlantResponse);
-    wateredPlantResponse.setDaysSinceLastDayWatering(getDaysSinceLastWatering(wateredPlantUpdated));
+    wateredPlantResponse.setDaysSinceLastDayWatering(
+        DateUtil.getDaysSinceLastWatering(wateredPlantUpdated.getLastDayWatering()));
 
-    PlantResponse pr = new PlantResponse();
-    BeanUtils.copyProperties(wateredPlantUpdated.getPlant(), pr);
-    wateredPlantResponse.setPlant(pr);
+    return wateredPlantResponse;
+  }
 
+  @ApiOperation(value = "Agregar una imagen de planta ",
+      notes = "Servicio para agregar una imagen de una planta ")
+  @ApiResponses(value = { @ApiResponse(code = 201, message = "Imagen agregada correctamente"),
+      @ApiResponse(code = 400, message = "Solicitud inválida"),
+      @ApiResponse(code = 500, message = "Error en el servidor") })
+  @PostMapping(value = "/image", headers = ("Content-Type=multipart/form-data"))
+  public WateredPlantResponse uploadPlantImage(@RequestParam() Long plantId,
+      @RequestParam("image") MultipartFile multipartFile) {
+    WateredPlant wateredPlantUpdated = wateredPlantService.updateImagePlant(plantId, multipartFile);
+    WateredPlantResponse wateredPlantResponse = new WateredPlantResponse();
+
+    BeanUtils.copyProperties(wateredPlantUpdated, wateredPlantResponse);
     return wateredPlantResponse;
   }
 
@@ -159,17 +151,10 @@ public class WateredPlantController {
     WateredPlantResponse wateredPlantResponse = new WateredPlantResponse();
 
     BeanUtils.copyProperties(wateredPlantPatched, wateredPlantResponse);
-    wateredPlantResponse.setDaysSinceLastDayWatering(getDaysSinceLastWatering(wateredPlantPatched));
-
-    PlantResponse pr = new PlantResponse();
-    BeanUtils.copyProperties(wateredPlantPatched.getPlant(), pr);
-    wateredPlantResponse.setPlant(pr);
+    wateredPlantResponse.setDaysSinceLastDayWatering(
+        DateUtil.getDaysSinceLastWatering(wateredPlantPatched.getLastDayWatering()));
 
     return wateredPlantResponse;
   }
 
-  private Long getDaysSinceLastWatering(WateredPlant wateredPlant) {
-    return wateredPlant.getLastDayWatering()
-        .until(LocalDate.now(), ChronoUnit.DAYS);
-  }
 }
