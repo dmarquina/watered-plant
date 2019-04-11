@@ -85,9 +85,7 @@
                             <name>dmarquina/${project.build.finalName}</name>
                             <build>
                                 <from>openjdk:8-jdk-alpine</from>
-                                <entryPoint>java -Dspring.profiles.active=prod -jar
-                                    /Users/dmarquina/application/${project.build.finalName}.jar
-                                </entryPoint>
+                                <entryPoint>java -Dspring.profiles.active=prod -jar /Users/dmarquina/application/${project.build.finalName}.jar</entryPoint>
                                 <assembly>
                                     <basedir>/Users/dmarquina/application/</basedir>
                                     <descriptorRef>artifact</descriptorRef>
