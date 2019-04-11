@@ -19,5 +19,5 @@ public interface WateredPlantService {
 
   WateredPlant updateLastDayWatering(Long id, LocalDate lastDayWatering);
 
-  WateredPlant updateImagePlant(Long plantId, MultipartFile newImage);
+  WateredPlant updateImagePlant(Long id, MultipartFile newImage);
 }

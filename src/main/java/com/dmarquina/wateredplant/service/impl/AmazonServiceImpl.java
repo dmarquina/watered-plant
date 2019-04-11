@@ -15,19 +15,25 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.Resource;
 
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 @Service
 public class AmazonServiceImpl implements AmazonService {
 
+  @Resource
+  Environment environment;
+
   private AmazonS3 amazonS3;
 
   @PostConstruct
   private void initializeAmazon() {
     this.amazonS3 = new AmazonS3Client(
-        new BasicAWSCredentials(Constants.AWS_ACCESS_KEY, Constants.AWS_SECRET_KEY));
+        new BasicAWSCredentials(environment.getProperty("aws_access_key"),
+                                environment.getProperty("aws_secret_key")));
   }
 
   @Override

@@ -55,11 +55,11 @@ public class WateredPlantServiceImpl implements WateredPlantService {
 
   @Override
   @Transactional
-  public WateredPlant updateImagePlant(Long plantId, MultipartFile newImage) {
+  public WateredPlant updateImagePlant(Long id, MultipartFile newImage) {
     try {
       //TODO: Validar si existe o no
-      WateredPlant wateredPlantFound = wateredPlantRepository.findById(plantId).get();
-      wateredPlantFound.setImage(amazonService.uploadFile(plantId, newImage));
+      WateredPlant wateredPlantFound = wateredPlantRepository.findById(id).get();
+      wateredPlantFound.setImage(amazonService.uploadFile(id, newImage));
       return wateredPlantRepository.save(wateredPlantFound);
     } catch (Exception e) {
       e.printStackTrace();

@@ -127,12 +127,14 @@ public class WateredPlantController {
       @ApiResponse(code = 400, message = "Solicitud inválida"),
       @ApiResponse(code = 500, message = "Error en el servidor") })
   @PostMapping(value = "/image", headers = ("Content-Type=multipart/form-data"))
-  public WateredPlantResponse uploadPlantImage(@RequestParam() Long plantId,
+  public WateredPlantResponse uploadPlantImage(@RequestParam() Long id,
       @RequestParam("image") MultipartFile multipartFile) {
-    WateredPlant wateredPlantUpdated = wateredPlantService.updateImagePlant(plantId, multipartFile);
+    WateredPlant wateredPlantUpdated = wateredPlantService.updateImagePlant(id, multipartFile);
     WateredPlantResponse wateredPlantResponse = new WateredPlantResponse();
 
     BeanUtils.copyProperties(wateredPlantUpdated, wateredPlantResponse);
+    wateredPlantResponse.setDaysSinceLastDayWatering(
+        DateUtil.getDaysSinceLastWatering(wateredPlantUpdated.getLastDayWatering()));
     return wateredPlantResponse;
   }
 
