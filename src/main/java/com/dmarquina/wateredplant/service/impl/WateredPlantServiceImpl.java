@@ -24,8 +24,8 @@ public class WateredPlantServiceImpl implements WateredPlantService {
   AmazonService amazonService;
 
   @Override
-  public List<WateredPlant> findAll() {
-    return wateredPlantRepository.findAllByOrderByIdDesc();
+  public List<WateredPlant> findAllMyWateredPlants(String userId) {
+    return wateredPlantRepository.findAllByUserIdOrderByIdDesc(userId);
   }
 
   @Override

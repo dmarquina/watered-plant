@@ -44,9 +44,9 @@ public class WateredPlantController {
       value = { @ApiResponse(code = 201, message = "Plantas regadas listadas correctamente"),
           @ApiResponse(code = 400, message = "Solicitud inválida"),
           @ApiResponse(code = 500, message = "Error en el servidor") })
-  @GetMapping(value = "/", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-  public List<WateredPlantResponse> findAllWateredPlants() {
-    return wateredPlantService.findAll()
+  @GetMapping(value = "/user/{userId}", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+  public List<WateredPlantResponse> findAllWateredPlants(@PathVariable String userId) {
+    return wateredPlantService.findAllMyWateredPlants(userId)
         .stream()
         .map(this::convertWateredPlantToWateredPlantResponse)
         .collect(Collectors.toList());

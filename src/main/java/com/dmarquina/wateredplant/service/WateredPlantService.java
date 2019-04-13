@@ -9,7 +9,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 public interface WateredPlantService {
 
-  List<WateredPlant> findAll();
+  List<WateredPlant> findAllMyWateredPlants(String userId);
 
   WateredPlant findById(Long id);
 

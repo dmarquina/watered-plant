@@ -22,12 +22,12 @@ public class WateredPlant {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
+  private String userId;
   private String name;
   private String image;
   private Long minWateringDays;
   private Long maxWateringDays;
   private LocalDate lastDayWatering;
-  private LocalDate createdDate;
 
   public WateredPlant() {
   }

@@ -7,6 +7,7 @@ import lombok.Data;
 @Data
 public class UpdateWateredPlantRequest {
   private Long id;
+  private String userId;
   private String name;
   private String image;
   private Long minWateringDays;
